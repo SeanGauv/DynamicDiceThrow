@@ -1,10 +1,12 @@
 package edu.temple.dicethrow
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.RecyclerView.Orientation
 
 
 /*
@@ -19,20 +21,44 @@ The Activity layout files for both Portrait and Landscape are already provided
 */
 
 class MainActivity : AppCompatActivity(), ButtonFragment.ButtonInterface {
+
+    private lateinit var dieFragment: DieFragment
+    private lateinit var buttonFragment: ButtonFragment
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        /* TODO 1: Load fragment(s)
-            - Show only Button Fragment if portrait
-            - show both fragments if Landscape
-          */
+        buttonFragment = ButtonFragment()
+        dieFragment = DieFragment()
+
+        val orientation = resources.configuration.orientation
+
+        supportFragmentManager.beginTransaction().apply {
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                replace(R.id.container1, ButtonFragment())
+                remove(dieFragment)
+            } else {
+                replace(R.id.container1, ButtonFragment())
+                replace(R.id.container2, dieFragment)
+            }
+            commit()
+        }
     }
 
     /* TODO 2: switch fragments if portrait (no need to switch fragments if Landscape)
         */
     // Remember to place Fragment transactions on BackStack so then can be reversed
     override fun buttonClicked() {
+        val orientation = resources.configuration.orientation
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            supportFragmentManager.beginTransaction().apply {
+                replace(R.id.container1, dieFragment)
+                addToBackStack(null)
+                commit()
+            }
+        }
 
     }
 
